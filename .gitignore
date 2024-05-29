@@ -1,41 +1,30 @@
-# Compiled Lua sources
-luac.out
+-- Скрипт для размещения в ServerScriptService
 
-# luarocks build files
-*.src.rock
-*.zip
-*.tar.gz
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ChatEvents = ReplicatedStorage:WaitForChild("DefaultChatSystemChatEvents")
+local SayMessageRequest = ChatEvents:WaitForChild("SayMessageRequest")
 
-# Object files
-*.o
-*.os
-*.ko
-*.obj
-*.elf
+-- Функция для отправки чата от имени другого игрока
+local function sendChatFromPlayer(playerName, message)
+    local player = Players:FindFirstChild(playerName)
+    if player then
+        SayMessageRequest:FireServer(message, "All")
+    else
+        warn("Player not found")
+    end
+end
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-*.def
-*.exp
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
+-- Пример использования функции
+Players.PlayerAdded:Connect(function(player)
+    player.Chatted:Connect(function(message)
+        -- Если игрок отправил команду "!sendFromOtherPlayer"
+        if message == "!sendFromOtherPlayer" then
+            -- Бесконечный цикл для спама сообщений
+            while true do
+                sendChatFromPlayer("ДругойИгрок", "ВСЕ ВЫХОДИТЕ ТУТ ВАГОНЫ БАГАНЫЕ!")
+                wait(1) -- Задержка между сообщениями, чтобы избежать моментального спама
+            end
+        end
+    end)
+end)
